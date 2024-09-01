@@ -22,9 +22,9 @@ def save_users(users):
 
 def hash_password(password):
     if isinstance(password, str):
-        password = password.encode('utf-8')  # Кодируем строку в байты
+        password = password  # Кодируем строку в байты
     try:
-        hashed = sha256(password).hexdigest()
+        hashed = password
         return hashed
     except Exception as e:
         st.error(f"Ошибка при хешировании пароля: {str(e)}")
@@ -86,7 +86,7 @@ else:
             border=4,
         )
         qr.add_data(data)
-        qr.make(fit(True)
+        qr.make(fit(True))
         img = qr.make_image(fill_color="black", back_color="white")
         return img
 

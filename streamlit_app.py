@@ -1,6 +1,6 @@
 import streamlit as st
 from hashlib import sha256
-import json, requests
+import json
 import os
 from bitcoin import *
 import qrcode
@@ -22,9 +22,9 @@ def save_users(users):
 
 def hash_password(password):
     if isinstance(password, str):
-        password = password  # Кодируем строку в байты
+        password = password.encode('utf-8')  # Кодируем строку в байты
     try:
-        hashed = password
+        hashed = sha256(password).hexdigest()
         return hashed
     except Exception as e:
         st.error(f"Ошибка при хешировании пароля: {str(e)}")
@@ -40,7 +40,7 @@ def register_user(username, password):
     else:
         hashed_password = hash_password(password)
         if hashed_password:  # Проверка на успешное хеширование
-            users[username] = hashed_password
+            users[username] = {'password': hashed_password}
             save_users(users)
             st.success("Регистрация успешна!")
 
@@ -50,7 +50,7 @@ def login_user(username, password):
         return
     users = load_users()
     hashed_password = hash_password(password)
-    if hashed_password and username in users and users[username] == hashed_password:
+    if hashed_password and username in users and users[username]['password'] == hashed_password:
         st.session_state['logged_in'] = True
         st.session_state['username'] = username
         st.success("Вход выполнен успешно!")
@@ -76,6 +76,7 @@ if not st.session_state['logged_in']:
     login_or_register()
 else:
     st.write(f"Добро пожаловать, {st.session_state['username']}!")
+    username = st.session_state['username']
 
     # Функции для работы с биткоин-адресом и транзакциями
     def generate_qr_code(data):
@@ -90,8 +91,16 @@ else:
         img = qr.make_image(fill_color="black", back_color="white")
         return img
 
-    def create_bitcoin_address():
-        private_key = random_key()
+    def get_or_create_bitcoin_address(username):
+        users = load_users()
+        if 'private_key' in users[username]:
+            private_key = users[username]['private_key']
+            st.write("Загружен сохраненный приватный ключ.")
+        else:
+            private_key = random_key()
+            users[username]['private_key'] = private_key
+            save_users(users)
+            st.write("Создан новый приватный ключ.")
         public_key = privtopub(private_key)
         address = pubtoaddr(public_key)
         return private_key, address
@@ -108,7 +117,7 @@ else:
             url = f"https://blockchain.info/q/addressbalance/{address}"
             response = requests.get(url)
             if response.status_code == 200:
-            # Баланс возвращается в сатоши, конвертируем в биткоины
+                # Баланс возвращается в сатоши, конвертируем в биткоины
                 balance_satoshi = int(response.text)
                 balance_btc = balance_satoshi / 1e8
                 return balance_btc
@@ -132,8 +141,8 @@ else:
             st.error(f"Ошибка при отправке биткоинов: {str(e)}")
             return None
 
-    # Создание и отображение биткоин-адреса
-    private_key, wallet_address = create_bitcoin_address()
+    # Получение или создание биткоин-адреса
+    private_key, wallet_address = get_or_create_bitcoin_address(username)
     st.write(f"Ваш приватный ключ: {private_key}")
     st.write(f"Ваш Bitcoin адрес: {wallet_address}")
     display_qr_code(wallet_address)

@@ -1,6 +1,6 @@
 import streamlit as st
 from hashlib import sha256
-import json
+import json, requests
 import os
 from bitcoin import *
 import qrcode
@@ -86,7 +86,7 @@ else:
             border=4,
         )
         qr.add_data(data)
-        qr.make(fit(True))
+        qr.make(fit=True)
         img = qr.make_image(fill_color="black", back_color="white")
         return img
 
@@ -104,10 +104,20 @@ else:
 
     def check_balance(address):
         txs = history(address)
-        balance = 0
-        for tx in txs:
-            balance += tx['value']
-        return balance / 100000000  # Перевод сатоши в BTC
+        try:
+            url = f"https://blockchain.info/q/addressbalance/{address}"
+            response = requests.get(url)
+            if response.status_code == 200:
+            # Баланс возвращается в сатоши, конвертируем в биткоины
+                balance_satoshi = int(response.text)
+                balance_btc = balance_satoshi / 1e8
+                return balance_btc
+            else:
+                st.error("Ошибка при получении баланса")
+                return None
+        except Exception as e:
+            st.error(f"Ошибка: {e}")
+            return None
 
     def send_bitcoins(private_key, to_address, amount):
         try:

@@ -102,12 +102,12 @@ else:
         users = load_users()
         if 'private_key' in users[username]:
             private_key = users[username]['private_key']
-            st.write("Загружен сохраненный приватный ключ.")
+            
         else:
             private_key = random_key()
             users[username]['private_key'] = private_key
             save_users(users)
-            st.write("Создан новый приватный ключ.")
+            
         public_key = privtopub(private_key)
         address = pubtoaddr(public_key)
         return private_key, address

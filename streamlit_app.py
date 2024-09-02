@@ -60,6 +60,7 @@ def login_user(username, password):
     if hashed_password and username in users and users[username]['password'] == hashed_password:
         st.session_state['logged_in'] = True
         st.session_state['username'] = username
+        st.session_state['page'] = 'main'
         st.success("Вход выполнен успешно!")
     else:
         st.error("Неверный логин или пароль.")
@@ -139,7 +140,7 @@ def main_page():
 
     # Добавляем кнопку для перехода на страницу отправки биткоинов
     if st.button("Перейти к отправке биткоинов"):
-        st.experimental_set_query_params(page="send")
+        st.session_state['page'] = 'send'
 
 def send_page():
     st.header("Отправка биткоинов")
@@ -169,18 +170,18 @@ def send_page():
             st.success(f"Транзакция отправлена! Хэш транзакции: {tx_hash}")
 
     if st.button("Вернуться на главную"):
-        st.experimental_set_query_params(page="main")
+        st.session_state['page'] = 'main'
 
 if 'logged_in' not in st.session_state:
     st.session_state['logged_in'] = False
 
-# Определяем, какая страница должна быть загружена
-page = st.experimental_get_query_params().get("page", ["main"])[0]
+if 'page' not in st.session_state:
+    st.session_state['page'] = 'login'
 
 if not st.session_state['logged_in']:
     login_or_register()
 else:
-    if page == "send":
+    if st.session_state['page'] == "send":
         send_page()
     else:
         main_page()

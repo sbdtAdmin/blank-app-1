@@ -1,6 +1,6 @@
 import streamlit as st
 from hashlib import sha256
-import json
+import json, requests
 import os
 from bitcoin import *
 import qrcode

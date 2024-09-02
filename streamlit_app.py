@@ -116,7 +116,7 @@ else:
         img = generate_qr_code(address)
         buffer = BytesIO()
         img.save(buffer, format="PNG")
-        st.image(buffer.getvalue(), caption="Ваш Bitcoin адрес")
+        st.image(buffer.getvalue(), caption=address)
 
     def check_balance(address):
         try:

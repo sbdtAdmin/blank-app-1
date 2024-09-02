@@ -140,7 +140,6 @@ def main_page():
     # Добавляем кнопку для перехода на страницу отправки биткоинов
     if st.button("Перейти к отправке биткоинов"):
         st.experimental_set_query_params(page="send")
-        st.experimental_rerun()
 
 def send_page():
     st.header("Отправка биткоинов")
@@ -171,7 +170,6 @@ def send_page():
 
     if st.button("Вернуться на главную"):
         st.experimental_set_query_params(page="main")
-        st.experimental_rerun()
 
 if 'logged_in' not in st.session_state:
     st.session_state['logged_in'] = False

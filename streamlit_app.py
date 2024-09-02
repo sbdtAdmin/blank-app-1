@@ -52,7 +52,7 @@ def register_user(username, password):
             st.success("Регистрация успешна!")
 
 def login_user(username, password):
-    if not username или password == '':
+    if not username or password == '':
         st.warning("Логин и пароль не могут быть пустыми.")
         return
     users = load_users()

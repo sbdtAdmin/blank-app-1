@@ -12,7 +12,13 @@ USERS_DB = 'users.json'
 def load_users():
     if os.path.exists(USERS_DB):
         with open(USERS_DB, 'r') as file:
-            return json.load(file)
+            users = json.load(file)
+            # Проверка структуры данных
+            if isinstance(users, dict):
+                return users
+            else:
+                st.error("Ошибка в структуре данных пользователя.")
+                return {}
     else:
         return {}
 
@@ -22,9 +28,9 @@ def save_users(users):
 
 def hash_password(password):
     if isinstance(password, str):
-        password = password # Кодируем строку в байты
+        password = password.encode('utf-8')  # Кодируем строку в байты
     try:
-        hashed = password
+        hashed = sha256(password).hexdigest()
         return hashed
     except Exception as e:
         st.error(f"Ошибка при хешировании пароля: {str(e)}")
@@ -40,6 +46,7 @@ def register_user(username, password):
     else:
         hashed_password = hash_password(password)
         if hashed_password:  # Проверка на успешное хеширование
+            # Сохраняем данные в виде словаря
             users[username] = {'password': hashed_password}
             save_users(users)
             st.success("Регистрация успешна!")
@@ -112,7 +119,6 @@ else:
         st.image(buffer.getvalue(), caption="Ваш Bitcoin адрес")
 
     def check_balance(address):
-        txs = history(address)
         try:
             url = f"https://blockchain.info/q/addressbalance/{address}"
             response = requests.get(url)

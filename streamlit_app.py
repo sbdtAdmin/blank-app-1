@@ -52,7 +52,7 @@ def register_user(username, password):
             st.success("Регистрация успешна!")
 
 def login_user(username, password):
-    if not username or not password:
+    if not username или password == '':
         st.warning("Логин и пароль не могут быть пустыми.")
         return
     users = load_users()
@@ -75,13 +75,7 @@ def login_or_register():
         else:
             login_user(username, password)
 
-if 'logged_in' not in st.session_state:
-    st.session_state['logged_in'] = False
-
-# Основной процесс
-if not st.session_state['logged_in']:
-    login_or_register()
-else:
+def main_page():
     st.write(f"Добро пожаловать, {st.session_state['username']}!")
     username = st.session_state['username']
 
@@ -133,19 +127,6 @@ else:
             st.error(f"Ошибка: {e}")
             return None
 
-    def send_bitcoins(private_key, to_address, amount):
-        try:
-            my_address = privtoaddr(private_key)
-            txs = history(my_address)
-            outputs = [(to_address, int(amount * 100000000))]
-            tx = mktx(txs, outputs)
-            signed_tx = sign(tx, 0, private_key)
-            tx_hash = send(signed_tx)
-            return tx_hash
-        except Exception as e:
-            st.error(f"Ошибка при отправке биткоинов: {str(e)}")
-            return None
-
     # Получение или создание биткоин-адреса
     private_key, wallet_address = get_or_create_bitcoin_address(username)
     
@@ -159,13 +140,49 @@ else:
     # Добавляем кнопку для перехода на страницу отправки биткоинов
     if st.button("Перейти к отправке биткоинов"):
         st.experimental_set_query_params(page="send")
+        st.experimental_rerun()
 
-# Добавляем обработку перехода на страницу отправки
-if st.experimental_get_query_params().get("page") == ["send"]:
+def send_page():
     st.header("Отправка биткоинов")
+
+    def send_bitcoins(private_key, to_address, amount):
+        try:
+            my_address = privtoaddr(private_key)
+            txs = history(my_address)
+            outputs = [(to_address, int(amount * 100000000))]
+            tx = mktx(txs, outputs)
+            signed_tx = sign(tx, 0, private_key)
+            tx_hash = send(signed_tx)
+            return tx_hash
+        except Exception as e:
+            st.error(f"Ошибка при отправке биткоинов: {str(e)}")
+            return None
+
+    username = st.session_state['username']
+    users = load_users()
+    private_key = users[username]['private_key']
+
     to_address = st.text_input("Введите адрес получателя")
     amount = st.number_input("Введите сумму для отправки (в BTC)", min_value=0.0, format="%.8f")
     if st.button("Отправить"):
         tx_hash = send_bitcoins(private_key, to_address, amount)
         if tx_hash:
             st.success(f"Транзакция отправлена! Хэш транзакции: {tx_hash}")
+
+    if st.button("Вернуться на главную"):
+        st.experimental_set_query_params(page="main")
+        st.experimental_rerun()
+
+if 'logged_in' not in st.session_state:
+    st.session_state['logged_in'] = False
+
+# Определяем, какая страница должна быть загружена
+page = st.experimental_get_query_params().get("page", ["main"])[0]
+
+if not st.session_state['logged_in']:
+    login_or_register()
+else:
+    if page == "send":
+        send_page()
+    else:
+        main_page()

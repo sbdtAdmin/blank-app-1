@@ -149,8 +149,7 @@ else:
 
     # Получение или создание биткоин-адреса
     private_key, wallet_address = get_or_create_bitcoin_address(username)
-    st.write(f"Ваш приватный ключ: {private_key}")
-    st.write(f"Ваш Bitcoin адрес: {wallet_address}")
+    
     display_qr_code(wallet_address)
 
     # Отправка биткоинов

@@ -102,7 +102,6 @@ else:
         users = load_users()
         if 'private_key' in users[username]:
             private_key = users[username]['private_key']
-            
         else:
             private_key = random_key()
             users[username]['private_key'] = private_key
@@ -152,7 +151,17 @@ else:
     
     display_qr_code(wallet_address)
 
-    # Отправка биткоинов
+    # Проверка баланса
+    st.header("Проверка баланса")
+    balance = check_balance(wallet_address)
+    st.write(f"Текущий баланс: {balance} BTC")
+
+    # Добавляем кнопку для перехода на страницу отправки биткоинов
+    if st.button("Перейти к отправке биткоинов"):
+        st.experimental_set_query_params(page="send")
+
+# Добавляем обработку перехода на страницу отправки
+if st.experimental_get_query_params().get("page") == ["send"]:
     st.header("Отправка биткоинов")
     to_address = st.text_input("Введите адрес получателя")
     amount = st.number_input("Введите сумму для отправки (в BTC)", min_value=0.0, format="%.8f")
@@ -160,8 +169,3 @@ else:
         tx_hash = send_bitcoins(private_key, to_address, amount)
         if tx_hash:
             st.success(f"Транзакция отправлена! Хэш транзакции: {tx_hash}")
-
-    # Проверка баланса
-    st.header("Проверка баланса")
-    balance = check_balance(wallet_address)
-    st.write(f"Текущий баланс: {balance} BTC")

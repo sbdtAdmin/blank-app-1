@@ -6,7 +6,7 @@ st.markdown(
 """
 <style>
 #MainMenu {visibility: hidden}
-footer {visibility: hidden}
+.share_shareMenuFooter__A3x5P {visibility: hidden}
 </style>
     """,
     unsafe_allow_html=True

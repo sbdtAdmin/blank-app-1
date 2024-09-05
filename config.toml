@@ -1,0 +1,22 @@
+[theme]
+base='dark'
+
+[global]
+disableWatchdogWarning = true
+
+hideGitHubButton = true
+
+[browser]
+gatherUsageStats = false
+
+[server]
+headless = true
+enableCORS = false
+enableXsrfProtection = false
+
+[runner]
+magicEnabled = false
+showWarningOnDirectExecution = false
+
+[deprecation]
+showfileUploaderEncoding = false

@@ -2,15 +2,15 @@ import streamlit as st
 from login_page import login_or_register
 from wallet_page import wallet_page
 
-st.markdown(
+#st.markdown(
     """
 <style>
 #MainMenu {visibility: hidden}
 footer {visibility: hidden}
 </style>
     """,
-    unsafe_allow_html=True
-)
+#    unsafe_allow_html=True
+#)
 
 # Проверка состояния сессии
 if 'logged_in' not in st.session_state:

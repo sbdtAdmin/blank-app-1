@@ -3,7 +3,7 @@ from login_page import login_or_register
 from wallet_page import wallet_page
 
 #st.markdown(
-    """
+"""
 <style>
 #MainMenu {visibility: hidden}
 footer {visibility: hidden}

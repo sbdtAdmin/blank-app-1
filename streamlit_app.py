@@ -7,6 +7,7 @@ st.markdown(
 <style>
 header {visibility: hidden};
 button[data-testid="manage-app-button"] {visibility: hidden};
+.styles_terminalButton__JBj5T {visibility: hidden};
 #MainMenu {visibility: hidden};
 .share_shareMenuFooter__A3x5P {visibility: hidden};
 </style>

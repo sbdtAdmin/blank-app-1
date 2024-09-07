@@ -5,8 +5,9 @@ from wallet_page import wallet_page
 st.markdown(
 """
 <style>
-#MainMenu {visibility: hidden}
-.share_shareMenuFooter__A3x5P {visibility: hidden}
+header {visibility: hidden};
+#MainMenu {visibility: hidden};
+.share_shareMenuFooter__A3x5P {visibility: hidden};
 </style>
     """,
     unsafe_allow_html=True
